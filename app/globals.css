@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --grain-opacity: 0.035;
+  }
+  html, body {
+    background: #0a0a0a;
+    color: #fafafa;
+    font-feature-settings: "ss01", "cv11";
+  }
+  * {
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: #FF4D1A;
+    color: #0a0a0a;
+  }
+}
+
+/* Subtle film grain overlay used app-wide */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+  opacity: var(--grain-opacity);
+  mix-blend-mode: overlay;
+}
