@@ -79,7 +79,10 @@ export interface VisualMetrics {
 
 export interface AnswerRecord {
   question: InterviewQuestion;
+  /** Cleaned transcript — STT mishearings on tech terms reconciled against the resume. */
   transcript: string;
+  /** Original raw STT output, kept for traceability. */
+  raw_transcript?: string;
   evaluation: AnswerEvaluation;
   audio: AudioMetrics;
   visual: VisualMetrics;

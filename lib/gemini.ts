@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 const apiKey = process.env.GEMINI_API_KEY;
-const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 let _client: GoogleGenAI | null = null;
 export function getGemini() {
@@ -35,7 +35,7 @@ export async function generateJSON<T = unknown>(opts: JsonGenOpts): Promise<T> {
       systemInstruction:
         opts.systemInstruction ??
         "You are a precise assistant. Respond with ONLY valid JSON. No markdown code fences. No prose.",
-      temperature: opts.temperature ?? 0.4,
+      temperature: opts.temperature ?? 0.3,
       responseMimeType: "application/json",
     },
   });

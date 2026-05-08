@@ -1,9 +1,11 @@
-// pdf-parse import is intentionally lazy because it inspects index.js at module init.
+import { PDFParse } from "pdf-parse";
+
 export async function extractPdfText(buf: Buffer): Promise<string> {
-  // @ts-expect-error - pdf-parse has CJS shape; we import the lib file directly to avoid debug code path
-  const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")).default as (
-    b: Buffer,
-  ) => Promise<{ text: string }>;
-  const out = await pdfParse(buf);
-  return out.text || "";
+  const parser = new PDFParse({ data: new Uint8Array(buf) });
+  try {
+    const result = await parser.getText();
+    return result.text || "";
+  } finally {
+    await parser.destroy();
+  }
 }

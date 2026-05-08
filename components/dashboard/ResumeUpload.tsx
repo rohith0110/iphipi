@@ -72,10 +72,10 @@ export function ResumeUpload({
             <Upload className="h-5 w-5 text-ink-300" />
           )}
         </div>
-        <div className="font-display text-lg text-ink-50">
+        <div className="font-display text-xl text-ink-50">
           {loading ? "Reading…" : filename ?? "Drop your resume"}
         </div>
-        <div className="mt-1 text-xs text-ink-500">
+        <div className="mt-1.5 text-sm text-ink-400">
           PDF or plain text · we never store the file
         </div>
         <Button

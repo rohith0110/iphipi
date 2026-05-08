@@ -29,7 +29,7 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-accent/10 blur-[160px]" />
+        <div className="absolute -top-40 left-1/2 h-150 w-200 -translate-x-1/2 rounded-full bg-accent/10 blur-[160px]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent,#0a0a0a_85%)]" />
       </div>
 
@@ -51,7 +51,7 @@ export default function HomePage() {
         </nav>
       </header>
 
-      <section className="mx-auto max-w-6xl px-6 pt-16 pb-32">
+      <section className="mx-auto max-w-6xl px-6 pt-16">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ink-800 bg-ink-900/60 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-ink-400">
           <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-slow" />
           Hackathon build · v0.1
@@ -64,8 +64,11 @@ export default function HomePage() {
           <span className="text-accent">.</span>
         </h1>
 
-        <p className="mt-8 max-w-xl text-base leading-relaxed text-ink-300">
-          An agent that reads your resume, infers what you can realistically be hired for, then runs an adaptive mock interview across audio, video, and text. Get a coaching report that names specific gaps — not generic advice.
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink-200">
+          An agent that reads your resume, infers what you can realistically be
+          hired for, then runs an adaptive mock interview across audio, video,
+          and text. Get a coaching report that names specific gaps — not
+          generic advice.
         </p>
 
         <div className="mt-10 flex items-center gap-3">
@@ -97,13 +100,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="how" className="mx-auto max-w-6xl border-t border-ink-800 px-6 py-24">
+      <section id="how" className="mx-auto max-w-6xl border-ink-800 px-6 py-24">
         <div className="mb-14 flex items-end justify-between">
           <h2 className="font-display text-4xl tracking-tight text-ink-50">
             Architecture, in four moves
           </h2>
           <span className="hidden font-mono text-xs uppercase tracking-widest text-ink-500 md:block">
-            §02 · pipeline
+            02 · pipeline
           </span>
         </div>
 
@@ -117,8 +120,8 @@ export default function HomePage() {
                 <span className="font-mono text-xs text-ink-500">{f.n}</span>
                 <span className="h-px w-8 bg-ink-700 transition-all duration-500 group-hover:w-16 group-hover:bg-accent" />
               </div>
-              <h3 className="mb-3 font-display text-xl text-ink-50">{f.title}</h3>
-              <p className="text-sm leading-relaxed text-ink-400">{f.body}</p>
+              <h3 className="mb-3 font-display text-2xl text-ink-50">{f.title}</h3>
+              <p className="text-base leading-relaxed text-ink-300">{f.body}</p>
             </article>
           ))}
         </div>
@@ -127,7 +130,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl border-t border-ink-800 px-6 py-24">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-ink-500">§03 · stack</span>
+            <span className="font-mono text-xs uppercase tracking-widest text-ink-500">03 · stack</span>
             <h2 className="mt-4 font-display text-4xl tracking-tight text-ink-50">
               Wired with the things that work.
             </h2>

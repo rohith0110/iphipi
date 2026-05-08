@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(D:/Coding/Randoms/iphipi1/node_modules/.bin/tsc --noEmit)",
+      "PowerShell(& \"D:\\\\Coding\\\\Randoms\\\\iphipi1\\\\node_modules\\\\.bin\\\\eslint.cmd\" . 2>&1 | Out-String)",
+      "PowerShell(& \"D:\\\\Coding\\\\Randoms\\\\iphipi1\\\\node_modules\\\\.bin\\\\next.cmd\" build 2>&1 | Out-String)",
+      "PowerShell(& \"D:\\\\Coding\\\\Randoms\\\\iphipi1\\\\node_modules\\\\.bin\\\\next.cmd\" build 2>&1 | Select-Object -Last 30 | Out-String)",
+      "Bash(D:/Coding/Randoms/iphipi1/node_modules/.bin/next.cmd dev *)",
+      "Bash(taskkill //PID 62664 //F)",
+      "Bash(taskkill //PID 24108 //F)",
+      "Bash(curl -s http://localhost:3000)",
+      "PowerShell(& \"D:\\\\Coding\\\\Randoms\\\\iphipi1\\\\node_modules\\\\.bin\\\\eslint.cmd\" lib/use-store.ts 2>&1 | Out-String)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 17988 //F)",
+      "Bash(curl -s -X POST -F \"file=@D:/Coding/Randoms/iphipi1/Problem Statement.pdf\" http://localhost:3000/api/resume/parse)",
+      "Bash(D:/Coding/Randoms/iphipi1/node_modules/.bin/convex.cmd dev *)",
+      "Bash(taskkill //PID 57348 //F)",
+      "PowerShell(& \"D:\\\\Coding\\\\Randoms\\\\iphipi1\\\\node_modules\\\\.bin\\\\next.cmd\" build 2>&1 | Select-Object -Last 25 | Out-String)"
+    ]
+  }
+}

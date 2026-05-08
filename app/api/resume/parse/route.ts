@@ -6,7 +6,14 @@ import type { ResumeAnalysis } from "@/lib/types";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const SYSTEM = `You are an expert technical recruiter. You analyse resumes and return ONLY valid JSON. No markdown, no prose.`;
+const SYSTEM = `You are an expert technical recruiter. You analyse resumes and return ONLY valid JSON. No markdown, no prose.
+
+CRITICAL FACTUAL RULES:
+- The resume is your only source of truth. Do not invent technologies, frameworks, or details that aren't written there.
+- A skill belongs in "strong" only if there's clear evidence (named project using it, role/duration, or measurable impact).
+- A skill belongs in "moderate" if mentioned without strong evidence.
+- "weak" must be reserved for skills the role typically expects but the resume LACKS — make it explicit in fit_reason that these are gaps, not claimed skills.
+- "project_deep_dives" must use the project's exact name as written in the resume. Do not attribute any tech stack, framework, or architectural detail to a project unless it is explicitly stated in the resume.`;
 
 const PROMPT = (resumeText: string) => `
 Analyze this resume and return strictly this JSON shape:
@@ -33,9 +40,10 @@ Analyze this resume and return strictly this JSON shape:
 
 Rules:
 - Infer 3 to 5 realistic target roles the candidate could *actually get* given seniority and evidence.
-- "weak" skills are areas the resume claims but provides little evidence for, OR adjacent skills the role expects but resume lacks.
-- "probe_areas" are concrete topics the interviewer should pressure-test.
-- "project_deep_dives" should reference real projects from the resume by name.
+- Skills classification is strict — see SYSTEM rules.
+- "probe_areas" are concrete topics the interviewer should pressure-test, drawn from things the resume claims (so the candidate can defend them) — NOT things the resume doesn't mention.
+- "project_deep_dives" entries must be the project's exact name from the resume. Do not invent a stack or scope. If a project's stack isn't in the resume, just list the name.
+- Never fabricate a technology for a candidate. If their resume mentions "Aeon Techfest Website" without specifying the backend, do not assume Flask/Node/anything.
 
 RESUME:
 """
