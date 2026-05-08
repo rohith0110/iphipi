@@ -54,7 +54,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-6 pt-16">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ink-800 bg-ink-900/60 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-ink-400">
           <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-slow" />
-          Hackathon build · v0.1
+          Hackathon build · v1.0
         </div>
 
         <h1 className="font-display text-[clamp(2.4rem,7vw,5.6rem)] leading-[0.95] tracking-tight text-ink-50">
