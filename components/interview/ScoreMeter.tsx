@@ -13,12 +13,12 @@ export function ScoreMeter({
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[10px] uppercase tracking-widest text-ink-500">
+        <span className="text-xs uppercase tracking-widest text-ink-400">
           {label}
         </span>
-        <span className="font-mono text-sm text-ink-100">{Math.round(pct)}</span>
+        <span className="font-mono text-base font-medium text-ink-100">{Math.round(pct)}</span>
       </div>
-      <div className="h-1 w-full overflow-hidden rounded-sm bg-ink-800">
+      <div className="h-1.5 w-full overflow-hidden rounded-sm bg-ink-800">
         <div
           className={cn(
             "h-full transition-all duration-500 ease-out",

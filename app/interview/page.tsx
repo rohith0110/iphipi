@@ -83,7 +83,7 @@ export default function InterviewPage() {
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch(() => {});
+        await videoRef.current.play().catch(() => { });
       }
       setPhase("ready");
     } catch {
@@ -174,7 +174,7 @@ export default function InterviewPage() {
     const evalData = await evalRes.json();
     const cleanedTranscript: string =
       typeof evalData.cleaned_transcript === "string" &&
-      evalData.cleaned_transcript.trim()
+        evalData.cleaned_transcript.trim()
         ? evalData.cleaned_transcript
         : transcript;
 
@@ -198,12 +198,28 @@ export default function InterviewPage() {
     void fetchNextQuestion(updated);
   }
 
-  // teardown camera/mic on unmount
+  // Stop tracks when the tab actually navigates away. We deliberately don't
+  // stop them in a useEffect cleanup — React 19 strict-mode runs effect
+  // cleanups on the first mount-unmount-mount cycle, which would kill the
+  // camera the instant we open the page.
   useEffect(() => {
-    return () => {
+    function handleHide() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
-    };
+    }
+    window.addEventListener("pagehide", handleHide);
+    return () => window.removeEventListener("pagehide", handleHide);
   }, []);
+
+  // Recovery: if the video element ever loses its srcObject (hot-reload,
+  // remount, etc.) but we still have a live stream, re-attach it.
+  useEffect(() => {
+    const v = videoRef.current;
+    const s = streamRef.current;
+    if (v && s && v.srcObject !== s) {
+      v.srcObject = s;
+      v.play().catch(() => { });
+    }
+  }, [phase]);
 
   if (!session) return null;
 
@@ -219,22 +235,32 @@ export default function InterviewPage() {
     <main className="min-h-screen">
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Logo />
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">
-            {session.targetRole} · Q{session.answers.length + (question ? 1 : 0)}/8
-          </span>
-          {phase === "answering" && (
-            <span className="inline-flex items-center gap-2 text-xs text-accent">
-              <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-              recording
-            </span>
-          )}
-        </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* LEFT: Video + question */}
         <div className="min-w-0 space-y-4">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-ink-800 pb-3">
+            <div className="min-w-0">
+              <div className="font-mono text-xs uppercase tracking-widest text-ink-500">
+                Question{" "}
+                {session.answers.length + (question ? 1 : 0)} · adaptive
+                length
+              </div>
+              <div className="mt-1 font-display text-2xl tracking-tight text-ink-50">
+                {session.targetRole}
+              </div>
+            </div>
+            {phase === "answering" && (
+              <span className="inline-flex items-center gap-2 rounded-sm border border-accent/40 bg-accent/10 px-3 py-1.5">
+                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                <span className="font-mono text-xs uppercase tracking-widest text-accent">
+                  Recording
+                </span>
+              </span>
+            )}
+          </div>
+
           <div className="relative aspect-video overflow-hidden rounded-lg border border-ink-800 bg-ink-950">
             <video
               ref={videoRef}
@@ -324,7 +350,7 @@ export default function InterviewPage() {
                       Difficulty {question.difficulty}/5
                     </span>
                   </div>
-                  <p className="font-display text-3xl leading-snug text-ink-50">
+                  <p className="font-display text-[22px] leading-snug text-ink-50">
                     {question.question}
                   </p>
                   <div className="mt-5 flex items-center gap-3">
@@ -370,14 +396,16 @@ export default function InterviewPage() {
                   {liveAudio.hesitation_count} fillers
                 </span>
               </div>
-              <p className="min-h-[3rem] text-base leading-relaxed text-ink-100">
-                {dg.state.final || (
-                  <span className="text-ink-500">
-                    Listening… speak naturally.
-                  </span>
-                )}
-                <span className="text-ink-400"> {dg.state.interim}</span>
-              </p>
+              <div className="max-h-48 overflow-y-auto">
+                <p className="min-h-12 text-base leading-relaxed text-ink-100">
+                  {dg.state.final || (
+                    <span className="text-ink-500">
+                      Listening… speak naturally.
+                    </span>
+                  )}
+                  <span className="text-ink-400"> {dg.state.interim}</span>
+                </p>
+              </div>
               {dg.state.error && (
                 <p className="mt-2 text-xs text-red-300">
                   {dg.state.error}. Falling back to silent recording — the
@@ -386,18 +414,77 @@ export default function InterviewPage() {
               )}
             </div>
           )}
+
+          {/* Past answers (was previously in the right sidebar — too cramped there) */}
+          {session.answers.length > 0 && (
+            <div className="rounded-lg border border-ink-800 bg-ink-900/40 p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="font-mono text-xs uppercase tracking-widest text-ink-400">
+                  Past answers
+                </span>
+                <span className="font-mono text-xs text-ink-500">
+                  {session.answers.length} of this session
+                </span>
+              </div>
+              <div className="space-y-2">
+                {session.answers.map((a, i) => (
+                  <details
+                    key={i}
+                    className="group rounded border border-ink-800 bg-ink-950/40 open:bg-ink-950/70"
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-mono text-[10px] uppercase tracking-widest text-ink-500">
+                          Q{i + 1} · {a.question.type.replace("_", " ")} · d
+                          {a.question.difficulty}
+                        </div>
+                        <div className="mt-1 truncate text-sm text-ink-100">
+                          {a.question.question}
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-baseline gap-1">
+                        <span className="font-mono text-xl text-ink-50">
+                          {Math.round(a.combined_score.technical)}
+                        </span>
+                        <span className="text-[10px] text-ink-500">tech</span>
+                      </div>
+                    </summary>
+                    <div className="space-y-3 border-t border-ink-800 px-4 py-3">
+                      <p className="text-sm leading-relaxed text-ink-200">
+                        {a.transcript || (
+                          <span className="italic text-ink-600">(silent)</span>
+                        )}
+                      </p>
+                      <div className="font-mono text-[11px] text-ink-500">
+                        correctness {a.evaluation.correctness_score} · depth{" "}
+                        {a.evaluation.depth_score} · {a.audio.speech_rate_wpm}{" "}
+                        wpm · {a.audio.hesitation_count} fillers
+                      </div>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* RIGHT: live meters + history */}
         <aside className="space-y-4">
           <div className="rounded-lg border border-ink-800 bg-ink-900/40 p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">
+              <span className="font-mono text-xs uppercase tracking-widest text-ink-400">
                 Live signals
               </span>
-              <span className="text-[10px] text-ink-600">
-                frames · {visual.live.frame_count}
-              </span>
+              {phase === "answering" ? (
+                <span className="inline-flex items-center gap-1.5 font-mono text-[14px] uppercase tracking-widest text-accent">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                  Live
+                </span>
+              ) : (
+                <span className="font-mono text-[14px] uppercase tracking-widest text-ink-600">
+                  Idle
+                </span>
+              )}
             </div>
             {phase === "answering" &&
               dg.state.durationSec > 8 &&
@@ -430,44 +517,6 @@ export default function InterviewPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-ink-800 bg-ink-900/40 p-5">
-            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">
-              History
-            </span>
-            <div className="mt-3 space-y-1">
-              {session.answers.map((a, i) => (
-                <details
-                  key={i}
-                  className="group rounded border border-ink-800 bg-ink-950/40 open:bg-ink-950/70"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs">
-                    <span className="truncate text-ink-300">
-                      <span className="font-mono text-ink-500">
-                        Q{i + 1}.
-                      </span>{" "}
-                      {a.question.question}
-                    </span>
-                    <span className="shrink-0 font-mono text-ink-100">
-                      {Math.round(a.combined_score.technical)}
-                    </span>
-                  </summary>
-                  <div className="border-t border-ink-800 px-3 py-2 text-[11px] leading-relaxed text-ink-300">
-                    {a.transcript || (
-                      <span className="text-ink-600 italic">(silent)</span>
-                    )}
-                    <div className="mt-2 font-mono text-[10px] text-ink-500">
-                      correctness {a.evaluation.correctness_score} · depth{" "}
-                      {a.evaluation.depth_score} · {a.audio.speech_rate_wpm}{" "}
-                      wpm · {a.audio.hesitation_count} fillers
-                    </div>
-                  </div>
-                </details>
-              ))}
-              {!session.answers.length && (
-                <div className="text-xs text-ink-600">No answers yet.</div>
-              )}
-            </div>
-          </div>
         </aside>
       </div>
     </main>
